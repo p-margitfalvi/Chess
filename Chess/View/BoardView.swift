@@ -14,15 +14,18 @@ class BoardView: UIView {
     @IBInspectable
     var borderSize: CGFloat = 5
     
-    //@IBInspectable
+    @IBInspectable
     var edgeOffset: CGFloat = 0
     
     private var pSquareSize: CGFloat = 0
+    private var boardSize: CGFloat = 0
     
     var squareSize: CGFloat {
         
         get {
-            return pSquareSize
+            
+            return 0
+    
         }
         
     }
@@ -35,26 +38,26 @@ class BoardView: UIView {
         // Drawing code
         
         let canvasSize = min(bounds.width, bounds.height)
-        let boardSize = canvasSize - borderSize - (2 * edgeOffset)
+        boardSize = canvasSize - borderSize - (edgeOffset)
         let path = UIBezierPath()
         path.lineWidth = borderSize
-        let lineOffset = edgeOffset / 16;
+
         
         for lineCount in 0..<9 {
             
             // Vertical lines
-            var currentPoint = CGPoint(x: (CGFloat(lineCount) * boardSize / 8) + borderSize / 2 + lineOffset, y: bounds.minY + lineOffset)
+            var currentPoint = CGPoint(x: (CGFloat(lineCount) * boardSize / 8) + borderSize / 2 + edgeOffset / 2, y: bounds.minY + edgeOffset / 2)
             path.move(to: currentPoint)
             if lineCount == 8 {
-                path.addLine(to: CGPoint(x: currentPoint.x, y: bounds.minY + boardSize + borderSize - lineOffset))
+                path.addLine(to: CGPoint(x: currentPoint.x, y: bounds.minY + boardSize + borderSize + edgeOffset / 2))
             } else {
-                path.addLine(to: CGPoint(x: currentPoint.x, y: bounds.minY + boardSize - lineOffset))
+                path.addLine(to: CGPoint(x: currentPoint.x, y: bounds.minY + boardSize + edgeOffset / 2))
             }
             
             // Horizontal lines
-            currentPoint = CGPoint(x: bounds.minX + lineOffset, y: (CGFloat(lineCount) * boardSize / 8) + borderSize / 2 + lineOffset)
+            currentPoint = CGPoint(x: bounds.minX + edgeOffset / 2, y: (CGFloat(lineCount) * boardSize / 8) + borderSize / 2 + edgeOffset / 2)
             path.move(to: currentPoint)
-            path.addLine(to: CGPoint(x: bounds.minX + boardSize - lineOffset, y: currentPoint.y))
+            path.addLine(to: CGPoint(x: bounds.minX + boardSize + edgeOffset / 2, y: currentPoint.y))
             
         }
         
