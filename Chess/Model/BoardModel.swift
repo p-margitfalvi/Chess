@@ -68,7 +68,6 @@ class BoardModel{
             for j in 0...3 {
                 
                 let k = j - s
-                print(k)
                 if (k == -3 || k == 3) {
                     // Fill the first and last row of the board
                     defBoard[0][(4 * i + j)] = Piece.init(pieceType: PieceType(rawValue: k)!, pieceColor: .black)

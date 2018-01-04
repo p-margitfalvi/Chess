@@ -12,7 +12,7 @@
 		24B447C71FE931DE003A14FD /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B447C61FE931DE003A14FD /* Piece.swift */; };
 		24B447CB1FE93810003A14FD /* BoardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B447CA1FE93810003A14FD /* BoardModel.swift */; };
 		24C86A2D1FE7BEB100325CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24C86A2C1FE7BEB100325CDD /* AppDelegate.swift */; };
-		24C86A2F1FE7BEB100325CDD /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24C86A2E1FE7BEB100325CDD /* ViewController.swift */; };
+		24C86A2F1FE7BEB100325CDD /* BoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24C86A2E1FE7BEB100325CDD /* BoardViewController.swift */; };
 		24C86A321FE7BEB100325CDD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 24C86A301FE7BEB100325CDD /* Main.storyboard */; };
 		24C86A341FE7BEB100325CDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 24C86A331FE7BEB100325CDD /* Assets.xcassets */; };
 		24C86A371FE7BEB100325CDD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 24C86A351FE7BEB100325CDD /* LaunchScreen.storyboard */; };
@@ -45,7 +45,7 @@
 		24B447CA1FE93810003A14FD /* BoardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardModel.swift; sourceTree = "<group>"; };
 		24C86A291FE7BEB100325CDD /* Chess.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chess.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24C86A2C1FE7BEB100325CDD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		24C86A2E1FE7BEB100325CDD /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		24C86A2E1FE7BEB100325CDD /* BoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewController.swift; sourceTree = "<group>"; };
 		24C86A311FE7BEB100325CDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		24C86A331FE7BEB100325CDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24C86A361FE7BEB100325CDD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -120,7 +120,7 @@
 				24CCEF691FFEB94C00EDFF8D /* View */,
 				2411C9B21FF992DB0035D7EA /* Model */,
 				24C86A2C1FE7BEB100325CDD /* AppDelegate.swift */,
-				24C86A2E1FE7BEB100325CDD /* ViewController.swift */,
+				24C86A2E1FE7BEB100325CDD /* BoardViewController.swift */,
 				24C86A301FE7BEB100325CDD /* Main.storyboard */,
 				24C86A331FE7BEB100325CDD /* Assets.xcassets */,
 				24C86A351FE7BEB100325CDD /* LaunchScreen.storyboard */,
@@ -294,7 +294,7 @@
 				2411C9B41FF999F20035D7EA /* BoardModelDelegate.swift in Sources */,
 				2411C9B81FF99CC20035D7EA /* PieceView.swift in Sources */,
 				24C86A5B1FE7BEEE00325CDD /* BoardView.swift in Sources */,
-				24C86A2F1FE7BEB100325CDD /* ViewController.swift in Sources */,
+				24C86A2F1FE7BEB100325CDD /* BoardViewController.swift in Sources */,
 				24B447CB1FE93810003A14FD /* BoardModel.swift in Sources */,
 				24C86A2D1FE7BEB100325CDD /* AppDelegate.swift in Sources */,
 			);

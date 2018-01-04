@@ -10,12 +10,31 @@ import UIKit
 
 class PieceView: UIView {
     
-    var pieceImage: UIImage! {
+    var pieceImage: UIImage? {
         
         didSet {
             setNeedsDisplay()
         }
         
+    }
+    
+    init(squareColor: BoardColor, frame: CGRect) {
+        super.init(frame: frame)
+        
+        switch squareColor {
+            
+        case .Black:
+            backgroundColor = UIColor.black
+        case .White:
+            backgroundColor = UIColor.white
+        }
+        
+        
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
     }
 
     /*
