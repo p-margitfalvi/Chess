@@ -29,12 +29,12 @@ enum PieceColor: Int {
 
 class Piece {
     
-    var piece: PieceType
+    var type: PieceType
     var color: PieceColor
     
     init(pieceType: PieceType, pieceColor: PieceColor) {
         
-        piece = pieceType
+        type = pieceType
         color = pieceColor
         
     }

@@ -8,41 +8,31 @@
 
 import UIKit
 
-class PieceView: UIView {
+class PieceView: UIImageView{
     
-    var pieceImage: UIImage? {
+    // CHANGE THE OPTIONAL LATER
+    var pieceColor: UIColor?/*
+    var delegate: PieceViewDelegate? {
         
         didSet {
-            setNeedsDisplay()
+            
+            touchRecognizer
+            
         }
         
     }
     
-    init(squareColor: BoardColor, frame: CGRect) {
+    let touchRecognizer = UITapGestureRecognizer(target: self, action: #selector (delegate?.pieceTouched(sender: self)))*/
+    
+    init(pieceColor color: UIColor, frame: CGRect) {
+        pieceColor = color
+        
         super.init(frame: frame)
-        
-        switch squareColor {
-            
-        case .Black:
-            backgroundColor = UIColor.black
-        case .White:
-            backgroundColor = UIColor.white
-        }
-        
-        
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
+        
         super.init(coder: aDecoder)
     }
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
-    }
-    */
 
 }

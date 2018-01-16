@@ -16,14 +16,15 @@ enum BoardError: Error {
 
 class BoardModel{
     
-    
     var publicBoard: [[Piece?]] {
         get {
             return board
         }
     }
+    
+    // TODO: Optimize by letting the subarray be an optional as well, so if a row is empty it is skipped in loops
     private var board: [[Piece?]]
-    var delegate: BoardDelegate?
+    var delegate: BoardModelDelegate?
     
     init() {
         
@@ -31,18 +32,20 @@ class BoardModel{
         
     }
     
-    func movePiece(from oldPosition: (Int, Int), to newPosition: (Int, Int)) throws {
+    func movePiece(from oldPosition: (x: Int, y: Int), to newPosition: (x: Int, y: Int)) throws {
         
-        if (moveAllowed(from: oldPosition, to: newPosition)) {
+        // REMOVE THE LAST || true IF YOU WANT THIS TO WORK
+        if (moveAllowed(from: oldPosition, to: newPosition) || true) {
             
-            if let piece = board[newPosition.0][newPosition.1] {
+            if let piece = board[newPosition.y][newPosition.x] {
                 
-                delegate?.pieceCaptured(piece: piece)
+                //delegate?.pieceCaptured()
                 
             }
             
-            board[newPosition.0][newPosition.1] = board[newPosition.0][newPosition.1]
-            board[oldPosition.0][oldPosition.1] = nil
+            delegate?.pieceMoved(from: oldPosition, to: newPosition)
+            board[newPosition.y][newPosition.x] = board[newPosition.y][newPosition.x]
+            board[oldPosition.y][oldPosition.x] = nil
             
         } else {
             
@@ -84,16 +87,16 @@ class BoardModel{
         return defBoard
     }
     
-    func moveAllowed(from oldPos: (Int, Int), to newPos: (Int, Int)) -> Bool {
+    func moveAllowed(from oldPos: (x: Int, y: Int), to newPos: (x: Int, y: Int)) -> Bool {
         
-        let optPiece = board[oldPos.0][oldPos.1]
+        let optPiece = board[oldPos.y][oldPos.x]
         
         
-        if ((max(newPos.0, newPos.1) > 8) || (min(newPos.0, newPos.1) < 0)) {
+        if ((max(newPos.y, newPos.x) > 8) || (min(newPos.y, newPos.x) < 0)) {
             return false
         }
         
-        let diff = (abs(newPos.0 - oldPos.0), abs(newPos.1 - oldPos.1))
+        let diff = (y: abs(newPos.y - oldPos.y), x: abs(newPos.x - oldPos.x))
         
         if let piece = optPiece {
             
@@ -103,47 +106,47 @@ class BoardModel{
             var capturesPiece = false
             
             // Check if the endpoint contains a piece of the same color, if so, dont allow the move
-            if (board[newPos.0][newPos.1]?.color == piece.color) {
+            if (board[newPos.y][newPos.x]?.color == piece.color) {
                 
                 return false
                 
             }
                 // If the endpoint is not empty and its not of the same color as current piece, we know that the endpoint is gonna be captured
-            else if (board[newPos.0][newPos.1] != nil) {
+            else if (board[newPos.y][newPos.x] != nil) {
                 
                 capturesPiece = true
                 
             }
             
-            switch piece.piece {
+            switch piece.type {
                 
             case .pawn:
-                if ((diff.0 == 0) && (diff.1 == 1)) {
+                if ((diff.x == 0) && (diff.y == 1)) {
                     return true
-                } else if (diff.1 == 2 && pathClear) { // Starting position double move
+                } else if (diff.x == 2 && pathClear) { // Starting position double move
                     // Check if position is a starting pos for a pawn
-                    if (oldPos.0 == 1 || oldPos.0 == 7) {
+                    if (oldPos.x == 1 || oldPos.x == 7) {
                         return true
                     }
-                } else if (diff.1 == 1 && (diff.0 == diff.1) && capturesPiece) { // If the pawn captures a piece at the end, allow it to move diagonally
+                } else if (diff.y == 1 && (diff.x == diff.y) && capturesPiece) { // If the pawn captures a piece at the end, allow it to move diagonally
                     return true
                 }
             case .bishop:
-                if (diff.0 == diff.1 && pathClear) {
+                if (diff.x == diff.y && pathClear) {
                     return true
                 }
             case .king:
-                if (max(diff.0, diff.1) == 1) {
+                if (max(diff.x, diff.y) == 1) {
                     return true
                 }
             case .knight:
                 break
             case .queen:
-                if (((diff.0 == diff.1) || min(diff.0, diff.1) == 0) && pathClear) {
+                if (((diff.x == diff.y) || min(diff.x, diff.y) == 0) && pathClear) {
                     return true
                 }
             case .rook:
-                if (min(diff.0, diff.1) == 0 && pathClear) {
+                if (min(diff.x, diff.y) == 0 && pathClear) {
                     return true
                 }
             }
@@ -155,27 +158,27 @@ class BoardModel{
         return false
     }
     
-    private func piecesBetween(position1: (Int, Int), position2: (Int, Int)) -> Bool {
+    private func piecesBetween(position1: (x: Int, y: Int), position2: (x: Int, y: Int)) -> Bool {
         
         
-        let diff = (abs(position1.0 - position2.0), abs(position1.1 - position2.1))
+        let diff = (y: abs(position1.y - position2.y), x: abs(position1.x - position2.x))
         
         // The case where the movement is purely horizontal
-        if (diff.1 == 0) {
+        if (diff.x == 0) {
             
-            for i in (position1.0 + 1)..<position2.0 {
+            for i in (position1.x + 1)..<position2.x {
                 
-                if (board[i][position2.1] != nil) {
+                if (board[i][position2.x] != nil) {
                     return true
                 }
                 
             }
             
-        } else if (diff.0 == 0) { // The case where the movement is purely vertical
+        } else if (diff.y == 0) { // The case where the movement is purely vertical
             
-            for i in (position1.1 + 1)..<position2.1 {
+            for i in (position1.x + 1)..<position2.x {
                 
-                if (board[position2.0][i] != nil) {
+                if (board[position2.y][i] != nil) {
                     
                     return true
                     
@@ -183,9 +186,9 @@ class BoardModel{
                 
             }
             
-        } else if (diff.0 == diff.1) { // The case where the movement is diagonal
+        } else if (diff.x == diff.y) { // The case where the movement is diagonal
             
-            for i in (position1.0 + 1)..<position2.0 {
+            for i in (position1.y + 1)..<position2.y {
                 
                 if (board[i][i] != nil) {
                     

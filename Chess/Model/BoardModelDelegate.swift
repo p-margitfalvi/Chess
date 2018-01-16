@@ -8,9 +8,8 @@
 
 import Foundation
 
-
-protocol BoardDelegate {
+protocol BoardModelDelegate {
     
-    func pieceCaptured(piece: Piece)
+    func pieceMoved(from oldCoords: (x: Int, y: Int), to newCoords: (x: Int, y: Int))
     
 }
