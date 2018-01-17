@@ -26,6 +26,8 @@ class BoardModel{
     private var board: [[Piece?]]
     var delegate: BoardModelDelegate?
     
+    var turnOfColor = PieceColor.white
+    
     init() {
         
         board = BoardModel.defaultBoard()
@@ -36,9 +38,17 @@ class BoardModel{
         
         if (moveAllowed(from: oldPosition, to: newPosition)) {
             
-            if let piece = board[newPosition.y][newPosition.x] {
+            // Responsible for alternating the player turns
+            if turnOfColor == .black {
+                turnOfColor = .white
+            } else {
+                turnOfColor = .black
+            }
+            
+            // If the newPosition square is populated, we have to let the delegate know that a piece is about to be captured
+            if board[newPosition.y][newPosition.x] != nil {
                 
-                //delegate?.pieceCaptured()
+                delegate?.pieceCaptured(at: newPosition)
                 
             }
             
@@ -86,6 +96,7 @@ class BoardModel{
         return defBoard
     }
     
+    // Checks if move is allowed from every factor
     private func moveAllowed(from oldPos: (x: Int, y: Int), to newPos: (x: Int, y: Int)) -> Bool {
         
         let optPiece = board[oldPos.y][oldPos.x]
@@ -95,65 +106,72 @@ class BoardModel{
             return false
         }
         
-        let diff = (y: abs(newPos.y - oldPos.y), x: abs(newPos.x - oldPos.x))
+        let absDiff = (y: abs(newPos.y - oldPos.y), x: abs(newPos.x - oldPos.x))
         
         if let piece = optPiece {
             
-            // Logic checking if there are any pieces between oldPos and newPos, EXCLUDES THE ENDPOINT
-            let pathClear = !piecesBetween(position1: oldPos, position2: newPos)
-            
-            var capturesPiece = false
-            
-            // Check if the endpoint contains a piece of the same color, if so, dont allow the move
-            if (board[newPos.y][newPos.x]?.color == piece.color) {
+            // If the current selected piece is not on turn, the move is automatically invalid
+            if piece.color == turnOfColor {
                 
-                return false
+                // Logic checking if there are any pieces between oldPos and newPos, EXCLUDES THE ENDPOINT
+                let pathClear = !piecesBetween(position1: oldPos, position2: newPos)
                 
-            }
-                // If the endpoint is not empty and its not of the same color as current piece, we know that the endpoint is gonna be captured
-            else if (board[newPos.y][newPos.x] != nil) {
+                var capturesPiece = false
                 
-                capturesPiece = true
+                // Check if the endpoint contains a piece of the same color, if so, dont allow the move
+                if (board[newPos.y][newPos.x]?.color == piece.color) {
+                    
+                    return false
+                    
+                }
+                    // If the endpoint is not empty and its not of the same color as current piece, we know that the endpoint is gonna be captured
+                else if (board[newPos.y][newPos.x] != nil) {
+                    
+                    capturesPiece = true
+                    
+                }
                 
-            }
-            
-            switch piece.type {
-                
-            case .pawn:
-                if ((diff.x == 0) && (diff.y == 1)) {
-                    return true
-                } else if (diff.x == 2 && pathClear) { // Starting position double move
-                    // Check if position is a starting pos for a pawn
-                    if (oldPos.x == 1 || oldPos.x == 7) {
+                switch piece.type {
+                    
+                case .pawn:
+                    let diff = (x: newPos.x - oldPos.x, y: newPos.y - oldPos.y)
+                    if ((max(diff.x, diff.y) > 0 && piece.color == .black) || (min(diff.x, diff.y) < 0 && piece.color == .white)) {
+                        if ((absDiff.x == 0) && (absDiff.y == 1) && !capturesPiece) {
+                            return true
+                        } else if (absDiff.y == 2 && pathClear) { // Starting position double move
+                            // Check if position is a starting pos for a pawn
+                            if (oldPos.y == 1 || oldPos.y == 6) {
+                                return true
+                            }
+                        } else if (absDiff.y == 1 && (absDiff.x == absDiff.y) && capturesPiece) { // If the pawn captures a piece at the end, allow it to move diagonally
+                            return true
+                        }
+                    }
+                case .bishop:
+                    if (absDiff.x == absDiff.y && pathClear) {
                         return true
                     }
-                } else if (diff.y == 1 && (diff.x == diff.y) && capturesPiece) { // If the pawn captures a piece at the end, allow it to move diagonally
-                    return true
+                case .king:
+                    if (max(absDiff.x, absDiff.y) == 1) {
+                        return true
+                    }
+                case .knight:
+                    if ((absDiff.x == 2 && absDiff.y == 1) || (absDiff.x == 1 && absDiff.y == 2)) {
+                        return true
+                    }
+                case .queen:
+                    if (((absDiff.x == absDiff.y) || min(absDiff.x, absDiff.y) == 0) && pathClear) {
+                        return true
+                    }
+                case .rook:
+                    if (min(absDiff.x, absDiff.y) == 0 && pathClear) {
+                        return true
+                    }
                 }
-            case .bishop:
-                if (diff.x == diff.y && pathClear) {
-                    return true
-                }
-            case .king:
-                if (max(diff.x, diff.y) == 1) {
-                    return true
-                }
-            case .knight:
-                if ((diff.x == 2 && diff.y == 1) || (diff.x == 1 && diff.y == 2)) {
-                    return true
-                }
-            case .queen:
-                if (((diff.x == diff.y) || min(diff.x, diff.y) == 0) && pathClear) {
-                    return true
-                }
-            case .rook:
-                if (min(diff.x, diff.y) == 0 && pathClear) {
-                    return true
-                }
+                
+                
+                
             }
-            
-            
-            
         }
         
         return false
@@ -162,7 +180,7 @@ class BoardModel{
     private func piecesBetween(position1: (x: Int, y: Int), position2: (x: Int, y: Int)) -> Bool {
         
         
-        let diff = (y: abs(position1.y - position2.y), x: abs(position1.x - position2.x))
+        let absDiff = (y: abs(position1.y - position2.y), x: abs(position1.x - position2.x))
         
         let maxX = max(position1.x, position2.x)
         let minX = min(position1.x, position2.x)
@@ -171,7 +189,7 @@ class BoardModel{
         let minY = min(position1.y, position2.y)
         
         // The case where the movement is purely horizontal
-        if (diff.y == 0) {
+        if (absDiff.y == 0) {
             
             for i in (minX + 1)..<maxX {
                 
@@ -181,7 +199,7 @@ class BoardModel{
                 
             }
             
-        } else if (diff.x == 0) { // The case where the movement is purely vertical
+        } else if (absDiff.x == 0) { // The case where the movement is purely vertical
             
             for i in (minY + 1)..<maxY {
                 
@@ -193,7 +211,7 @@ class BoardModel{
                 
             }
             
-        } else if (diff.x == diff.y) { // The case where the movement is diagonal
+        } else if (absDiff.x == absDiff.y) { // The case where the movement is diagonal
             
             for i in (minY + 1)..<maxY {
                 

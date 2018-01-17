@@ -76,8 +76,13 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         
     }
     
-    func pieceCaptured(atPosition: (x: Int, y: Int)) {
+    func pieceCaptured(at position: (x: Int, y: Int)) {
         
+        if let view = pieceView(atIndices: position) {
+            
+            view.removeFromSuperview()
+            
+        }
         
     }
     
@@ -88,9 +93,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         
         if let oldPiece = selectedPiece {
             
-            // Moves the selected piece
-            // DOESNT CHECK FOR MOVE VALIDITY YET
-            
+            // Add code for the case that if a move is impossible it should just select another piece
             do {
                 try board.movePiece(from: oldPiece.indices, to: squareTouched)
             } catch {
@@ -107,7 +110,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
             }
             
         }
-        // Add code for the case that if a move is impossible it should just select another piece
+        
     }
     
     private func pieceView(atIndices coords: (x: Int, y: Int)) -> PieceView? {

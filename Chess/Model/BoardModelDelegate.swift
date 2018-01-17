@@ -11,5 +11,6 @@ import Foundation
 protocol BoardModelDelegate {
     
     func pieceMoved(from oldCoords: (x: Int, y: Int), to newCoords: (x: Int, y: Int))
+    func pieceCaptured(at position: (x: Int, y: Int))
     
 }
