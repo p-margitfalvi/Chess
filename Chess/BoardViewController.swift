@@ -13,12 +13,19 @@ class BoardViewController: UIViewController, BoardModelDelegate {
     let board = BoardModel()
     @IBOutlet weak var boardView: BoardView!
     
+    var gestureRecognizer: UITapGestureRecognizer!
+    var selectedPiece: (indices: (x: Int, y: Int), view: PieceView)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         board.delegate = self
+        
+        gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.squareTouched))
+        gestureRecognizer.numberOfTapsRequired = 1
+        gestureRecognizer.numberOfTouchesRequired = 1
+        boardView.addGestureRecognizer(gestureRecognizer)
         
         // Initial setup of the default board
         for (yIdx, column) in board.publicBoard.enumerated() {
@@ -39,10 +46,8 @@ class BoardViewController: UIViewController, BoardModelDelegate {
                     
                     let view = PieceView(pieceColor: color, frame: viewRect)
                     
-                    let tapGestureRecognizer = UITapGestureRecognizer(target: view, action: #selector(pieceTouched))
-                    view.addGestureRecognizer(tapGestureRecognizer)
-                    
                     view.image = imageFor(pieceType: piece.type, color: piece.color)
+                    view.isUserInteractionEnabled = true
                     
                     view.contentMode = .redraw
                     boardView.addSubview(view)
@@ -54,7 +59,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
             
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -66,7 +71,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
             
             view.frame = mapCoords(coords: newCoords)
             view.setNeedsDisplay()
-
+            
         }
         
     }
@@ -76,13 +81,34 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         
     }
     
-    @objc func pieceTouched(sender: UITapGestureRecognizer) {
+    @objc func squareTouched(sender: UITapGestureRecognizer) {
         
-        print(sender.loc)
+        let locationTouched = sender.location(in: boardView)
+        let squareTouched = mapCoords(point: locationTouched)
         
-        
+        if let oldPiece = selectedPiece {
+            
+            // Moves the selected piece
+            // DOESNT CHECK FOR MOVE VALIDITY YET
+            
+            do {
+                try board.movePiece(from: oldPiece.indices, to: squareTouched)
+            } catch {
+                print("Invalid move")
+            }
+            
+            selectedPiece = nil
+            
+        } else {
+            
+            if let piece = pieceView(atIndices: squareTouched) {
+                
+                selectedPiece = (squareTouched, piece)
+            }
+            
+        }
+        // Add code for the case that if a move is impossible it should just select another piece
     }
-    
     
     private func pieceView(atIndices coords: (x: Int, y: Int)) -> PieceView? {
         
@@ -92,7 +118,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         for view in boardView.subviews {
             
             if view.frame.contains(midpoint) {
-    
+                
                 if let pieceView = view as? PieceView {
                     
                     return pieceView
@@ -103,6 +129,15 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         }
         
         return nil
+    }
+    
+    private func mapCoords(point: CGPoint) -> (x: Int, y: Int) {
+        
+        let xCoord = Int((point.x - boardView.edgeOffset - boardView.borderSize) / boardView.inlineSquareSize)
+        let yCoord = Int((point.y - boardView.edgeOffset - boardView.borderSize) / boardView.inlineSquareSize)
+        
+        return (xCoord, yCoord)
+        
     }
     
     private func mapCoords(frame: CGRect) -> (x: Int, y: Int) {
@@ -118,6 +153,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         
         let xPoint = CGFloat(coords.x) * boardView.inlineSquareSize + boardView.edgeOffset + boardView.borderSize
         let yPoint = CGFloat(coords.y) * boardView.inlineSquareSize + boardView.edgeOffset + boardView.borderSize
+        
         return CGRect(x: xPoint, y: yPoint, width: boardView.inlineSquareSize, height: boardView.inlineSquareSize)
         
     }
@@ -152,7 +188,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         return UIImage(named: fileName) ?? #imageLiteral(resourceName: "placeholder")
         
     }
-
-
+    
+    
 }
 

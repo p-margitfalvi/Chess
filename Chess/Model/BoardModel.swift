@@ -34,8 +34,7 @@ class BoardModel{
     
     func movePiece(from oldPosition: (x: Int, y: Int), to newPosition: (x: Int, y: Int)) throws {
         
-        // REMOVE THE LAST || true IF YOU WANT THIS TO WORK
-        if (moveAllowed(from: oldPosition, to: newPosition) || true) {
+        if (moveAllowed(from: oldPosition, to: newPosition)) {
             
             if let piece = board[newPosition.y][newPosition.x] {
                 
@@ -44,7 +43,7 @@ class BoardModel{
             }
             
             delegate?.pieceMoved(from: oldPosition, to: newPosition)
-            board[newPosition.y][newPosition.x] = board[newPosition.y][newPosition.x]
+            board[newPosition.y][newPosition.x] = board[oldPosition.y][oldPosition.x]
             board[oldPosition.y][oldPosition.x] = nil
             
         } else {
@@ -87,7 +86,7 @@ class BoardModel{
         return defBoard
     }
     
-    func moveAllowed(from oldPos: (x: Int, y: Int), to newPos: (x: Int, y: Int)) -> Bool {
+    private func moveAllowed(from oldPos: (x: Int, y: Int), to newPos: (x: Int, y: Int)) -> Bool {
         
         let optPiece = board[oldPos.y][oldPos.x]
         
@@ -140,7 +139,9 @@ class BoardModel{
                     return true
                 }
             case .knight:
-                break
+                if ((diff.x == 2 && diff.y == 1) || (diff.x == 1 && diff.y == 2)) {
+                    return true
+                }
             case .queen:
                 if (((diff.x == diff.y) || min(diff.x, diff.y) == 0) && pathClear) {
                     return true
@@ -163,10 +164,16 @@ class BoardModel{
         
         let diff = (y: abs(position1.y - position2.y), x: abs(position1.x - position2.x))
         
+        let maxX = max(position1.x, position2.x)
+        let minX = min(position1.x, position2.x)
+        
+        let maxY = max(position1.y, position2.y)
+        let minY = min(position1.y, position2.y)
+        
         // The case where the movement is purely horizontal
-        if (diff.x == 0) {
+        if (diff.y == 0) {
             
-            for i in (position1.x + 1)..<position2.x {
+            for i in (minX + 1)..<maxX {
                 
                 if (board[i][position2.x] != nil) {
                     return true
@@ -174,9 +181,9 @@ class BoardModel{
                 
             }
             
-        } else if (diff.y == 0) { // The case where the movement is purely vertical
+        } else if (diff.x == 0) { // The case where the movement is purely vertical
             
-            for i in (position1.x + 1)..<position2.x {
+            for i in (minY + 1)..<maxY {
                 
                 if (board[position2.y][i] != nil) {
                     
@@ -188,7 +195,7 @@ class BoardModel{
             
         } else if (diff.x == diff.y) { // The case where the movement is diagonal
             
-            for i in (position1.y + 1)..<position2.y {
+            for i in (minY + 1)..<maxY {
                 
                 if (board[i][i] != nil) {
                     
