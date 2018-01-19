@@ -15,6 +15,7 @@ class BoardViewController: UIViewController, BoardModelDelegate {
     
     var gestureRecognizer: UITapGestureRecognizer!
     var selectedPiece: (indices: (x: Int, y: Int), view: PieceView)?
+    var squaresAllowed: (forPiece: (x: Int, y: Int), squares: [(x: Int, y: Int)]?)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,24 +92,53 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         let locationTouched = sender.location(in: boardView)
         let squareTouched = mapCoords(point: locationTouched)
         
-        if let oldPiece = selectedPiece {
+        // This variable marks whether there is a need to select a new piece
+        var selectPiece = false
+        
+        if let oldPiece = selectedPiece { // If a piece is already selected, try to move it to the location of touch
             
             // Add code for the case that if a move is impossible it should just select another piece
             do {
                 try board.movePiece(from: oldPiece.indices, to: squareTouched)
             } catch {
                 print("Invalid move")
+                selectPiece = true
             }
             
+            selectedPiece?.view.backgroundColor = nil
             selectedPiece = nil
             
-        } else {
+        } else { // If there is no piece selected yet, we need to make it selected, provided that its that colors turn
+            selectPiece = true
+            
+        }
+        
+        // If a piece is to be selected, make its and its moves's background green, if its not that colors turn, flash the piece red
+        if selectPiece {
             
             if let piece = pieceView(atIndices: squareTouched) {
                 
-                selectedPiece = (squareTouched, piece)
+                // Flashes the piece red
+                if piece.pieceColor != mapColor(color: board.playerToMove) {
+                    
+                    UIView.animate(withDuration: 2) { piece.backgroundColor = .red }
+                    UIView.animate(withDuration: 1) { piece.backgroundColor = nil }
+                    
+                } else {
+                    
+                    selectedPiece = (squareTouched, piece)
+                    selectedPiece?.view.backgroundColor = UIColor.green
+                    let squaresAllowed = board.movesAllowed(from: squareTouched)
+                    if  !squaresAllowed.isEmpty{
+                        
+                        boardView.rectsToOverlay = squaresAllowed.map() { square in
+                            
+                            return mapCoords(coords: square)
+                            
+                        }
+                    }
+                }
             }
-            
         }
         
     }
@@ -132,6 +162,17 @@ class BoardViewController: UIViewController, BoardModelDelegate {
         }
         
         return nil
+    }
+    
+    private func mapColor(color: PieceColor) -> UIColor {
+        
+        switch color {
+        case .black:
+            return UIColor.black
+        case .white:
+            return UIColor.white
+        }
+        
     }
     
     private func mapCoords(point: CGPoint) -> (x: Int, y: Int) {

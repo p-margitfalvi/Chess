@@ -16,24 +16,24 @@ enum BoardError: Error {
 
 class BoardModel{
     
-    var publicBoard: [[Piece?]] {
-        get {
-            return board
-        }
-    }
+    var publicBoard: [[Piece?]] { get { return board } }
     
+    var delegate: BoardModelDelegate?
+    // The color of the player whose turn is it, read only
+    var playerToMove: PieceColor { get { return turnOfColor } }
+    
+    private var turnOfColor = PieceColor.white
     // TODO: Optimize by letting the subarray be an optional as well, so if a row is empty it is skipped in loops
     private var board: [[Piece?]]
-    var delegate: BoardModelDelegate?
-    
-    var turnOfColor = PieceColor.white
     
     init() {
         
+        // Sets the current board to its default state
         board = BoardModel.defaultBoard()
         
     }
     
+    // Checks if the move is allowed, then moves the piece
     func movePiece(from oldPosition: (x: Int, y: Int), to newPosition: (x: Int, y: Int)) throws {
         
         if (moveAllowed(from: oldPosition, to: newPosition)) {
@@ -64,7 +64,7 @@ class BoardModel{
         
     }
     
-    
+    // Creates the starting chess board
     private static func defaultBoard() -> [[Piece?]] {
         
         var defBoard = [[Piece?]](repeatElement([Piece?](repeatElement(nil, count: 8)), count: 8));
@@ -95,6 +95,35 @@ class BoardModel{
         
         return defBoard
     }
+    /////////////////////////////////////////////////////////////////
+    // Returns all the squares that a piece is allowed to move to  //
+    /////////////////////////////////////////////////////////////////
+    //FOR NOW THIS LOOPS THROUGH ALL BOARD SQUARES, OPTIMIZE LATER //
+    /////////////////////////////////////////////////////////////////
+    func movesAllowed(from position: (x: Int, y: Int)) -> [(x: Int, y: Int)] {
+        
+        var result = [(x: Int, y: Int)]()
+        
+        for (yIdx, _) in board.enumerated() {
+            
+            for (xIdx, _) in board.enumerated() {
+                
+                if xIdx == position.x && yIdx == position.y {
+                    continue
+                }
+                
+                if moveAllowed(from: position, to: (xIdx, yIdx)) {
+                    
+                    result.append((x: xIdx, y: yIdx))
+                    
+                }
+                
+            }
+
+        }
+
+        return result
+    }
     
     // Checks if move is allowed from every factor
     private func moveAllowed(from oldPos: (x: Int, y: Int), to newPos: (x: Int, y: Int)) -> Bool {
@@ -111,7 +140,7 @@ class BoardModel{
         if let piece = optPiece {
             
             // If the current selected piece is not on turn, the move is automatically invalid
-            if piece.color == turnOfColor {
+            if piece.color == playerToMove {
                 
                 // Logic checking if there are any pieces between oldPos and newPos, EXCLUDES THE ENDPOINT
                 let pathClear = !piecesBetween(position1: oldPos, position2: newPos)
@@ -135,10 +164,12 @@ class BoardModel{
                     
                 case .pawn:
                     let diff = (x: newPos.x - oldPos.x, y: newPos.y - oldPos.y)
+                    // First we have to check if the pawn doesn't try to move backwards, according to its color
                     if ((max(diff.x, diff.y) > 0 && piece.color == .black) || (min(diff.x, diff.y) < 0 && piece.color == .white)) {
+                        // The case of a simple forward movement
                         if ((absDiff.x == 0) && (absDiff.y == 1) && !capturesPiece) {
                             return true
-                        } else if (absDiff.y == 2 && pathClear) { // Starting position double move
+                        } else if (absDiff.y == 2 && absDiff.x == 0 && pathClear) { // Starting position double move
                             // Check if position is a starting pos for a pawn
                             if (oldPos.y == 1 || oldPos.y == 6) {
                                 return true
@@ -180,7 +211,8 @@ class BoardModel{
     private func piecesBetween(position1: (x: Int, y: Int), position2: (x: Int, y: Int)) -> Bool {
         
         
-        let absDiff = (y: abs(position1.y - position2.y), x: abs(position1.x - position2.x))
+        let absDiff = ( x: abs(position1.x - position2.x), y: abs(position1.y - position2.y))
+        let diff = (x: position2.x - position1.x, y: position2.y - position1.y)
         
         let maxX = max(position1.x, position2.x)
         let minX = min(position1.x, position2.x)
@@ -193,7 +225,7 @@ class BoardModel{
             
             for i in (minX + 1)..<maxX {
                 
-                if (board[i][position2.x] != nil) {
+                if (board[position2.y][i] != nil) {
                     return true
                 }
                 
@@ -203,7 +235,7 @@ class BoardModel{
             
             for i in (minY + 1)..<maxY {
                 
-                if (board[position2.y][i] != nil) {
+                if (board[i][position2.x] != nil) {
                     
                     return true
                     
@@ -213,9 +245,11 @@ class BoardModel{
             
         } else if (absDiff.x == absDiff.y) { // The case where the movement is diagonal
             
-            for i in (minY + 1)..<maxY {
+            
+            for i in 1..<absDiff.x {
                 
-                if (board[i][i] != nil) {
+                let piece = board[position1.y + (diff.y / absDiff.y) * i][position1.x + (diff.x / absDiff.x) * i]
+                if (piece != nil) {
                     
                     return true
                     
@@ -223,11 +257,8 @@ class BoardModel{
                 
             }
             
-            
         }
-        
         
         return false
     }
-    
 }

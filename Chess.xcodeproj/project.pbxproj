@@ -10,6 +10,7 @@
 		2411C9B41FF999F20035D7EA /* BoardModelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2411C9B31FF999F20035D7EA /* BoardModelDelegate.swift */; };
 		2411C9B81FF99CC20035D7EA /* PieceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2411C9B71FF99CC20035D7EA /* PieceView.swift */; };
 		242CE13F200EADE600B7B2D4 /* PieceViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 242CE13E200EADE600B7B2D4 /* PieceViewDelegate.swift */; };
+		249D54EC20120BF300AEB430 /* BoardSelectOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 249D54EB20120BF300AEB430 /* BoardSelectOverlay.swift */; };
 		24B447C71FE931DE003A14FD /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B447C61FE931DE003A14FD /* Piece.swift */; };
 		24B447CB1FE93810003A14FD /* BoardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B447CA1FE93810003A14FD /* BoardModel.swift */; };
 		24C86A2D1FE7BEB100325CDD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24C86A2C1FE7BEB100325CDD /* AppDelegate.swift */; };
@@ -43,6 +44,7 @@
 		2411C9B31FF999F20035D7EA /* BoardModelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardModelDelegate.swift; sourceTree = "<group>"; };
 		2411C9B71FF99CC20035D7EA /* PieceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceView.swift; sourceTree = "<group>"; };
 		242CE13E200EADE600B7B2D4 /* PieceViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieceViewDelegate.swift; sourceTree = "<group>"; };
+		249D54EB20120BF300AEB430 /* BoardSelectOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardSelectOverlay.swift; sourceTree = "<group>"; };
 		24B447C61FE931DE003A14FD /* Piece.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Piece.swift; sourceTree = "<group>"; };
 		24B447CA1FE93810003A14FD /* BoardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardModel.swift; sourceTree = "<group>"; };
 		24C86A291FE7BEB100325CDD /* Chess.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chess.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -155,6 +157,7 @@
 				2411C9B71FF99CC20035D7EA /* PieceView.swift */,
 				242CE13E200EADE600B7B2D4 /* PieceViewDelegate.swift */,
 				24C86A5A1FE7BEEE00325CDD /* BoardView.swift */,
+				249D54EB20120BF300AEB430 /* BoardSelectOverlay.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -300,6 +303,7 @@
 				24C86A5B1FE7BEEE00325CDD /* BoardView.swift in Sources */,
 				24C86A2F1FE7BEB100325CDD /* BoardViewController.swift in Sources */,
 				24B447CB1FE93810003A14FD /* BoardModel.swift in Sources */,
+				249D54EC20120BF300AEB430 /* BoardSelectOverlay.swift in Sources */,
 				24C86A2D1FE7BEB100325CDD /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

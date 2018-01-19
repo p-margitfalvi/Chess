@@ -31,6 +31,27 @@ class BoardView: UIView {
     var outlineSquareSize: CGFloat { get { return boardSize / 8 } }
     var inlineSquareSize: CGFloat { get { return (boardSize - borderSize) / 8} }
     
+    var rectsToOverlay: [CGRect]? {
+        
+        willSet {
+            
+            overlay.overlayRects = newValue
+            
+        }
+    }
+    
+    private var overlay: BoardSelectOverlay!
+    
+    override init(frame: CGRect) {
+        overlay = BoardSelectOverlay(frame: frame)
+        super.init(frame: frame)
+        
+        self.addSubview(overlay)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
     
     // Only override draw() if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.
